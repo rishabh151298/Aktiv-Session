@@ -1,0 +1,20 @@
+<odoo>
+
+    <!-- Add the custom pricelist field and domain for the pricelist -->
+    <record id="sale_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                <attribute name="domain">
+                    [('partner_id', '=', partner_id), ('start_date', '&lt;=', date_order), '|',
+                    ('end_date', '&gt;', date_order), ('current_date', '&gt;', date_order)]
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
+                <field name="pricelist_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
