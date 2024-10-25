@@ -2,18 +2,18 @@
 
 {
     "name": "Product Pricelist",
-    "version": "17.0.0.0.1",
+    "version": "17.0.0.0.3",
     "category": "Product",
     "summary": "Price of Product",
     "description": """
         Product Pricelist
         ========================================
-        This module filtered the price of products based on the partners
+        This module filtered the pricelist of products based on the partners
         """,
     "author": "Aktiv Software",
     "company": "Aktiv Software",
     "website": "https://www.aktivsoftware.com",
-    "depends": ["sale", "product"],
+    "depends": ["sale_management", "product"],
     "data": [
         "views/product_pricelist_views.xml",
         "views/sale_order_views.xml",

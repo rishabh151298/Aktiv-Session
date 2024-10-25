@@ -10,23 +10,29 @@ class SaleOrderInherited(models.Model):
 
     @api.onchange("product_id")
     def onchange_product_id(self):
-        """Method to set the lowest price unit"""
+        """Method to set the lowest price unit for the selected product."""
         if self.product_id:
-            pricelist_id = (
+            pricelist_items = (
                 self.env["product.pricelist"]
-                .search([])
+                .search([("partner_id", "=", self.order_id.partner_id.id)])
                 .item_ids.filtered(
-                    lambda l: l.product_tmpl_id.id
-                    == self.product_id.product_tmpl_id.id
+                    lambda l: l.product_tmpl_id
+                    == self.product_id.product_tmpl_id
                 )
             )
-            if pricelist_id and len(pricelist_id) > 1:
-                min_pricelist = min(pricelist_id.mapped("fixed_price"))
-                pricelist = pricelist_id.filtered(
-                    lambda l: l.fixed_price == min_pricelist
+            if pricelist_items:
+                min_price = min(pricelist_items.mapped("fixed_price"))
+                min_pricelist_item = pricelist_items.filtered(
+                    lambda item: item.fixed_price == min_price
                 )
-                if pricelist:
-                    self.pricelist_id = pricelist[-1].id
-                    self.price_unit = min_pricelist
+                if min_pricelist_item:
+                    self.pricelist_id = min_pricelist_item[-1].pricelist_id.id
+                    self.price_unit = min_price
                 else:
                     self.pricelist_id = self.order_id.pricelist_id.id
+            else:
+                self.pricelist_id = (
+                    self.order_id.pricelist_id.id
+                    if self.order_id.pricelist_id
+                    else False
+                )
